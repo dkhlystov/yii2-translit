@@ -1,6 +1,6 @@
 {
-    "name": "simple-yii2/translit",
-    "description": "Translit extension for Yii PHP Framework Version 2",
+    "name": "dkhlystov/yii2-translit",
+    "description": "Translit helper for Yii 2 framework",
     "type": "yii2-extension",
     "keywords": ["yii2","extension","translit"],
     "license": "BSD-3-Clause",
