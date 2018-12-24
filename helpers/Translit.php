@@ -1,16 +1,16 @@
 <?php
 
-namespace helpers;
+namespace dkhlystov\helpers;
 
 /**
- * Translit helper class.
- * Make shure that you set locale for using iconv.
+ * Translit helper class
+ * Make shure that you set locale for using iconv
  */
 class Translit
 {
 
 	/**
-	 * @var string[] Replace list. Most friendly with Google and Yandex.
+	 * @var array replace list. Most friendly with Google and Yandex.
 	 */
 	private static $_chr = [
 
@@ -49,15 +49,15 @@ class Translit
 	];
 
 	/**
-	 * Tranlit.
-	 * @param string $text Text for transliteration.
+	 * Tranlit
+	 * @param string $text text for transliteration.
 	 * @return string
 	 */
 	public static function t($text)
 	{
 		$text = mb_strtolower($text);
 
-		//cyrilic and symbols translit
+		// Cyrilic and symbols translit
 		$replace = self::$_replace;
 		$s = '';
 		for ($i = 0; $i < mb_strlen($text); $i++) { 
@@ -69,17 +69,17 @@ class Translit
 			}
 		}
 
-		//other translit
-		//make shure that you set locale for using iconv
+		// Other translit
+		// Make shure that you set locale for using iconv
 		$s = iconv('UTF-8', 'ASCII//TRANSLIT', $s);
 
-		//remove symbols
+		// Remove symbols
 		$s = preg_replace('/[^\-0-9a-z]+/i', '', $s);
 
-		//double spaces
+		// Double spaces
 		$s = preg_replace('/\-+/', '-', $s);
 
-		//spaces at begin and end
+		// Spaces at begin and end
 		$s = preg_replace('/^\-*(.*?)\-*$/', '$1', $s);
 
 		return $s;
