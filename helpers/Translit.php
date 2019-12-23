@@ -4,59 +4,86 @@ namespace dkhlystov\helpers;
 
 /**
  * Translit helper class
- * Make shure that you set locale for using iconv
+ * Most friendly with Google and Yandex.
+ * 
+ * Implemented:
+ * - Basic Latin (ASCII)
+ * - Latin-1 Supplement
+ * - Latin Extended-A
+ * - Cyrillic
+ * - Greek and Coptic
  */
 class Translit
 {
     /**
-     * @var array replace list. Most friendly with Google and Yandex.
+     * @var array replace chars
      */
     public static $replace = [
-        'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd',
-        'е' => 'e', 'ё' => 'e', 'ж' => 'j', 'з' => 'z', 'и' => 'i',
-        'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n',
-        'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't',
-        'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'ts', 'ч' => 'ch',
-        'ш' => 'sh', 'щ' => 'shh', 'ъ' => '', 'ы' => 'y', 'ь' => '',
-        'э' => 'e', 'ю' => 'u', 'я' => 'ya',
+        'a' => 'àáâãäåāăąаα',
+        'b' => 'бβ',
+        'c' => 'çćĉċč',
+        'd' => 'ðďđдδ',
+        'e' => 'èéêëēĕėęěеёэε',
+        'f' => 'фφ',
+        'g' => 'ĝğġģгγ',
+        'h' => 'ĥħхη',
+        'i' => 'ìíîïĩīĭįıиіїι',
+        'j' => 'ĵжј',
+        'k' => 'ķĸкκ',
+        'l' => 'ĺļľŀłлλ',
+        'm' => 'мμ',
+        'n' => 'ñńņňŉŋнν',
+        'o' => 'òóôõöōŏőоο',
+        'p' => 'пπ',
+        'r' => 'ŕŗřрρ',
+        's' => 'šśŝşſсσ',
+        't' => 'ţťŧтτ',
+        'u' => 'ùúûüũūŭůűųую',
+        'v' => 'в',
+        'w' => 'ŵω',
+        'x' => 'ξ',
+        'y' => 'ýÿŷйыυ',
+        'z' => 'źżžзζ',
+        '-' => ' .,—‐/+',
+    ];
 
-        '-' => '-', ' ' => '-', '.' => '-', ',' => '-',
+    /**
+     * @var array extended replace list
+     */
+    public static $extended = [
+        'æ' => 'ae', 'œ' => 'oe', 'ĳ' => 'ij',
+        'ц' => 'ts', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'shh', 'я' => 'ya',
+        'θ' => 'th', 'χ' => 'ch', 'ψ' => 'ps',
     ];
 
     /**
      * Tranlit
-     * @param string $text text for transliteration.
+     * @param string $text text for transliteration
      * @return string
      */
     public static function t($text)
     {
         $text = mb_strtolower($text);
 
-        // Cyrilic and symbols translit
-        $replace = self::$replace;
-        $s = '';
-        for ($i = 0; $i < mb_strlen($text); $i++) {
-            $c = mb_substr($text, $i, 1);
-            if (array_key_exists($c, $replace)) {
-                $s .= $replace[$c];
-            } else {
-                $s .= $c;
-            }
+        // Replace
+        foreach (self::$replace as $t => $s) {
+            $text = preg_replace('/[' . preg_quote($s) . ']/', $t, $text);
         }
 
-        // Other translit
-        // Make shure that you set locale for using iconv
-        $s = iconv('UTF-8', 'ASCII//TRANSLIT', $s);
+        // Extended
+        foreach (self::$extended as $s => $t) {
+            $text = preg_replace('/[' . preg_quote($s) . ']/', $t, $text);
+        }
 
         // Remove symbols
-        $s = preg_replace('/[^\-0-9a-z]+/i', '', $s);
+        $text = preg_replace('/[^\-0-9a-z]+/i', '', $text);
 
         // Double spaces
-        $s = preg_replace('/\-+/', '-', $s);
+        $text = preg_replace('/\-+/', '-', $text);
 
         // Spaces at begin and end
-        $s = preg_replace('/^\-*(.*?)\-*$/', '$1', $s);
+        $text = preg_replace('/^\-*(.*?)\-*$/', '$1', $text);
 
-        return $s;
+        return $text;
     }
 }
